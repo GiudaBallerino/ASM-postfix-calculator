@@ -32,13 +32,9 @@ char output[10];
     // Chiamata assembly
     //**********************************
 
-    // char n = '8';
-    // printf("Indirizzo: %p\n", &n);
-    // postfix(&n, output);
-
-    char string[] = "30";// 2 + 20 -";
-    printf("Indirizzo: %p\n", string);
-    postfix(string, output);
+    char string[] = "30 2 + 20 -";
+    int result = postfix(string, output);
+    printf("%i\n", result);
     
     // postfix(input,output);
     // printf("%s\n",output);          // printf di controllo  
