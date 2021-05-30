@@ -32,10 +32,12 @@ char output[10];
     // Chiamata assembly
     //**********************************
 
-    char string[] = "30 2 + 20 -";
+    // char string[] = "30 2 + 20 - -2 *";
+    char string[] = "2 5 - 30 +";
+    // char string[] = "-12 -2 * -2 *";
     int result = postfix(string, output);
-    printf("%i\n", result);
-    
+    printf("Risultato: %i\n", result);
+
     // postfix(input,output);
     // printf("%s\n",output);          // printf di controllo  
 

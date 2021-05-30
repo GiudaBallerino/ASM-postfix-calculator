@@ -1,5 +1,6 @@
 .section .data
   ebp: .long 0
+  al: .long 0
 
   invalid: .ascii "Invalid"
   invalid_len: .long . - invalid
@@ -16,8 +17,12 @@ postfix:
   movl %esp, %ebp        # ebp come registro per recuperare i parametri
 
 	pushl %ebx             # salvo i registri general purpose
-	pushl %ecx
-	pushl %edx
+  pushl %ecx
+  pushl %edx
+
+  xorl %ebx, %ebx
+  xorl %ecx, %ecx
+  xorl %edx, %edx
 
   # Start code
   movl 4(%ebp), %ebx                 # leggo puntatore a input string
@@ -28,7 +33,6 @@ do:
   # subb $48, %al
   subb $'0', %al  # sottrai 48
 
-  # Code
   cmp $'+'-48, %al
   je if_plus
   cmp $'-'-48, %al
@@ -49,26 +53,58 @@ do:
   jg if_invalid
   jmp if_number
 
-  # jmp invalid  # Invalid
+  jmp invalid  # Invalid
 
   if_plus:
-    # code
+    popl %edx
+    popl %ecx
+
+    addl %edx, %ecx
+
+    pushl %ecx
     jmp while
 
   if_dash:
-    movl $1, negative
+    movb $1, negative
     jmp while
 
   if_minum:
-    # code
+    # xorl %edx, %edx
+    popl %edx
+    popl %ecx
+
+    subl %edx, %ecx
+
+    pushl %ecx
+    movb $0, negative
     jmp while
 
   if_mul:
-    # code
+    mov %al, %cl  # salvo %al
+    
+    popl %edx
+    popl %eax
+
+    mul %edx
+    pushl %eax
+
+    # movl $0, %eax
+    mov %cl, %al  # ripristino %al
     jmp while
 
   if_div:
-    # code
+    mov %al, al  # salvo %al
+
+    xorl %edx, %edx
+
+    popl %ecx
+    popl %eax
+
+    idiv %ecx
+    pushl %eax
+
+    # movl $0, %eax
+    mov al, %al  # ripristino %al
     jmp while
 
   if_space:
@@ -83,21 +119,29 @@ do:
     jg while
 
     create_number:
-      # code (se numero negativo: * -1)
-      # pushl number  # eliminare da stack al termine del programma
-      movl $0, number
+      movb negative, %dl
+      cmp $1, %dl
+      jne save_number
+
+      negl number  # numero negativo
+      movb $0, negative
+
+      save_number:
+        pushl number
+        # movl number, %edx
+        movl $0, number
 
     jmp while
 
   if_number:
     mov %al, %cl  # salvo %ax
 
-    mov $10, %dx
+    movl $10, %edx
     movl number, %eax
     mul %edx
 
-    add %ecx, %eax
-    mov %eax, number
+    addl %ecx, %eax
+    movl %eax, number
 
     mov %cl, %al  # ripristino %ax
 
@@ -119,14 +163,14 @@ while:
 
 return:
 
-  # popl %eax
+  popl %eax
 
 
 fine:
 
   popl %edx              # ripristino i registri general purpose
-	popl %ecx
-	popl %ebx
+  popl %ecx
+  popl %ebx
 
   movl ebp, %ebp         # ripristino %ebp
 
