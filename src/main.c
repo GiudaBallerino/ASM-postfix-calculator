@@ -27,19 +27,16 @@ char output[10];
     //**********************************
     
     // input = retrieve_input(argv[1]);
+    char string[] = "13000 -45 32 + / 1 + 1 + 1 + 2 + 3 + 5 + -800000 + 2 * 10 * 1 -";
 
     //**********************************
     // Chiamata assembly
     //**********************************
 
-    // char string[] = "30 2 + 20 - -2 *";
-    char string[] = "2 5 - 30 +";
-    // char string[] = "-12 -2 * -2 *";
+    // int result = postfix(input,output);
     int result = postfix(string, output);
     printf("Risultato: %i\n", result);
-
-    // postfix(input,output);
-    // printf("%s\n",output);          // printf di controllo  
+    printf("%s\n",output);          // printf di controllo  
 
     //**********************************
     // Scrivi output della funzione sul file

@@ -1,6 +1,6 @@
 .section .data
   ebp: .long 0
-  al: .long 0
+  esp: .long 0
 
   invalid: .ascii "Invalid"
   invalid_len: .long . - invalid
@@ -13,24 +13,24 @@
   .global postfix
 
 postfix:
-  movl %ebp, ebp         # salvo ebp
-  movl %esp, %ebp        # ebp come registro per recuperare i parametri
+  movl %ebp, ebp  # salvo ebp
+  movl %esp, %ebp  # ebp come registro per recuperare i parametri
 
-	pushl %ebx             # salvo i registri general purpose
+	pushl %ebx  # salvo i registri general purpose
   pushl %ecx
   pushl %edx
+  pushl %esi
+  pushl %edi
 
-  xorl %ebx, %ebx
-  xorl %ecx, %ecx
-  xorl %edx, %edx
+  movl %esp, esp  # salvo esp
 
   # Start code
-  movl 4(%ebp), %ebx                 # leggo puntatore a input string
+  movl 4(%ebp), %esi  # input string
+  movl 8(%ebp), %edi  # output string
 
 do:
-  movb (%ebx), %al
+  movb (%esi), %al
 
-  # subb $48, %al
   subb $'0', %al  # sottrai 48
 
   cmp $'+'-48, %al
@@ -48,12 +48,12 @@ do:
   je if_space
 
   cmp $'0'-48, %al
-  jl if_invalid
+  jl return_invalid
   cmp $'9'-48, %al
-  jg if_invalid
+  jg return_invalid
   jmp if_number
 
-  jmp invalid  # Invalid
+  jmp return_invalid  # Invalid
 
   if_plus:
     popl %edx
@@ -69,14 +69,13 @@ do:
     jmp while
 
   if_minum:
-    # xorl %edx, %edx
     popl %edx
     popl %ecx
 
     subl %edx, %ecx
 
     pushl %ecx
-    movb $0, negative
+    movb $0, negative  # reset 'negative'
     jmp while
 
   if_mul:
@@ -88,14 +87,12 @@ do:
     mul %edx
     pushl %eax
 
-    # movl $0, %eax
     mov %cl, %al  # ripristino %al
     jmp while
 
   if_div:
-    mov %al, al  # salvo %al
-
-    xorl %edx, %edx
+    xorl %edx, %edx  # reset %edx
+    mov %al, %bl  # salvo %al
 
     popl %ecx
     popl %eax
@@ -103,8 +100,7 @@ do:
     idiv %ecx
     pushl %eax
 
-    # movl $0, %eax
-    mov al, %al  # ripristino %al
+    mov %bl, %al  # ripristino %al
     jmp while
 
   if_space:
@@ -128,12 +124,12 @@ do:
 
       save_number:
         pushl number
-        # movl number, %edx
         movl $0, number
 
     jmp while
 
   if_number:
+    xorl %ecx, %ecx  # reset %ecx
     mov %al, %cl  # salvo %ax
 
     movl $10, %edx
@@ -144,11 +140,7 @@ do:
     movl %eax, number
 
     mov %cl, %al  # ripristino %ax
-
     jmp while
-
-  if_invalid:
-    jmp return
 
 
 while:
@@ -157,21 +149,39 @@ while:
   cmp $-48, %al  # compare con -48 (\0 - 48)
   je return
 
-  incl %ebx  # incrementa ebx
+  incl %esi  # incrementa ebx
   jmp do
 
 
 return:
 
   popl %eax
+  jmp fine
+
+return_invalid:
+  movl invalid_len, %ecx
+  leal invalid, %esi
+
+  write_string:
+    movb (%esi), %al
+    movb %al, (%edi)
+    incl %esi
+    incl %edi
+
+  loop write_string
+  movb $0, (%edi)
 
 
 fine:
 
-  popl %edx              # ripristino i registri general purpose
+  movl esp, %esp  # salvo esp
+
+  popl %edi  # ripristino i registri general purpose
+  popl %esi
+  popl %edx
   popl %ecx
   popl %ebx
 
-  movl ebp, %ebp         # ripristino %ebp
+  movl ebp, %ebp  # ripristino %ebp
 
 ret
