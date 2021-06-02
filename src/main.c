@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 
 /* Nome funzione Assembly dichiarata con extern */
-// extern int postfix(char* input,char* output); 
 extern int postfix(char* input,char* output); 
 /* ************************************* */
 
@@ -26,23 +25,20 @@ char output[10];
     // Recupera input dal file
     //**********************************
     
-    // input = retrieve_input(argv[1]);
-    char string[] = "13000 -45 32 + / 1 + 1 + 1 + 2 + 3 + 5 + -800000 + 2 * 10 * 1 -";
+    input = retrieve_input(argv[1]);
+    
 
     //**********************************
     // Chiamata assembly
     //**********************************
-
-    // int result = postfix(input,output);
-    int result = postfix(string, output);
-    printf("Risultato: %i\n", result);
-    printf("%s\n",output);          // printf di controllo  
+    postfix(input,output);
+    //printf("%s\n",output);          // printf di controllo  
 
     //**********************************
     // Scrivi output della funzione sul file
     //**********************************
 
-    //write_output(argv[2],output);
+    write_output(argv[2],output);
 
     return 0;
 }

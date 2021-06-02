@@ -16,7 +16,7 @@ postfix:
   movl %ebp, ebp  # salvo ebp
   movl %esp, %ebp  # ebp come registro per recuperare i parametri
 
-	pushl %ebx  # salvo i registri general purpose
+  pushl %ebx  # salvo i registri
   pushl %ecx
   pushl %edx
   pushl %esi
@@ -154,29 +154,38 @@ while:
 
 
 return:
-
   popl %eax
+  call itoa
+
+  write_string:
+    movb (%eax), %bl
+    movb %bl, (%edi)
+    incl %eax
+    incl %edi
+
+    cmp $0, %bl
+    jne write_string
+
   jmp fine
 
 return_invalid:
   movl invalid_len, %ecx
   leal invalid, %esi
 
-  write_string:
+  write_string_invalid:
     movb (%esi), %al
     movb %al, (%edi)
     incl %esi
     incl %edi
 
-  loop write_string
+    loop write_string_invalid  # decrementa %ecx e salta
   movb $0, (%edi)
 
 
 fine:
+  movl esp, %esp  # ripristino esp
 
-  movl esp, %esp  # salvo esp
-
-  popl %edi  # ripristino i registri general purpose
+  popl %edi  # ripristino i registri
   popl %esi
   popl %edx
   popl %ecx
