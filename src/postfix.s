@@ -149,7 +149,7 @@ while:
   cmp $-48, %al  # compare con -48 (\0 - 48)
   je return
 
-  incl %esi  # incrementa ebx
+  incl %esi  # incrementa esi
   jmp do
 
 

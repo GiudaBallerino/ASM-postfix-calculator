@@ -1,8 +1,8 @@
 
-all: bin/main
+all: bin/postfix
 
-bin/main: obj/itoa.o obj/postfix.o obj/main.o
-	gcc -m32 obj/main.o obj/postfix.o obj/itoa.o -o bin/main
+bin/postfix: obj/itoa.o obj/postfix.o obj/main.o
+	gcc -m32 obj/main.o obj/postfix.o obj/itoa.o -o bin/postfix
 
 obj/itoa.o: src/itoa.s
 	gcc -gstabs -m32 -c src/itoa.s -o obj/itoa.o
