@@ -2,7 +2,7 @@
 # Converts an integer into a string
 
 .section .data
-	string: .ascii "00000000000"
+	string: .ascii "0000000000000"
 	sign: .short 0
 
 .section .text
