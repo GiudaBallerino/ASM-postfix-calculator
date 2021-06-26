@@ -25,38 +25,40 @@ itoa:
 
 	movl $10, %ebx  # 10 in %ebx per divisione
 
-	leal string, %esi
+	leal string, %esi  # puntatore di string in %esi
 
-	cmp $0, %eax
+	cmp $0, %eax  # se >=0 -> salta a divide
 	jge divide
 
 negative:
-	movb $1, sign  # salvo segno negativo
-	negl %eax
+	movb $1, sign  # salva segno negativo
+	negl %eax  # cambia segno
 
 divide:
 	movl $0, %edx  # azzera %edx
 	div %ebx  # dividi %eax per 10
 
-	addb $48, %dl  # ottieni carattere
+	addb $48, %dl  # ottiene carattere
 
-	movb %dl, (%ecx,%esi,1)  # sposta DL in string
+	movb %dl, (%ecx,%esi,1)  # sposta %dl in string
 	inc %ecx
 
-	cmp $0, %eax
-	jne divide  # mentre diverso da 0
+	cmp $0, %eax # se diverso 0 -> salta a divide
+	jne divide
 
-cmp $0, sign
+
+cmp $0, sign  # se numero positivo -> salta a reverse
 je reverse
 
-movb $'-', (%ecx,%esi,1)  # aggiungi '-'
+movb $'-', (%ecx,%esi,1)  # aggiunge '-' al termina di string
 inc %ecx
 
 reverse:
 	movb $0, (%ecx,%esi,1)  # aggiungi carattere di terminazione
-	# inc %ecx  # non incremento -> length-1
+	# inc %ecx  # NON incremento -> length-1
 
 	movl $0, %ebx  # azzera %ebx
+	# %ecx = length di string
 
 	_loop:
 		# %ebx = i
@@ -71,11 +73,11 @@ reverse:
 		inc %ebx
 		dec %ecx
 
-		cmp %ecx, %ebx
+		cmp %ecx, %ebx  # se %ecx >= %ebx -> salta a _loop
 		jl _loop
 
 _return:
-	leal string, %eax  # return in %eax
+	leal string, %eax  # puntatore di string in %eax
 
 	popl %edi  # ripristino i registri
 	popl %esi
